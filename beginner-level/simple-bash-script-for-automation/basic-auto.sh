@@ -1,58 +1,28 @@
 #!/bin/bash
 
-# Bash script to automate system management tasks, including updating, upgrading, 
-# cleaning log files, and managing backups (backup/restore). This improved version 
-# incorporates modularization, error handling, logging, user feedback, and other enhancements.
+# Bash script to automate basic Linux system tasks such as updating, upgrading,
+# cleaning log files, and managing backups (backup/restore).
 
-# -------------------------
-# Constants and Configuration
-# -------------------------
-BACKUP_DIR="/mnt/backup"  # Default backup directory
-LOG_FILE="/var/log/system_automation.log"  # Log file to track actions
-RED='\033[0;31m'  # Red color for errors
-GREEN='\033[0;32m'  # Green color for success
-YELLOW='\033[0;33m'  # Yellow color for warnings
-NC='\033[0m'  # No color
+# Prompt the user to select a service
+echo "Select the service to proceed: "
+echo "1. Update the system"
+echo "2. Upgrade the system"
+echo "3. Clean log files"
+echo "4. Backup or Restore important data"
+echo "5. Exit"
 
-# Ensure the backup directory and log file exist
-mkdir -p "$BACKUP_DIR"
-touch "$LOG_FILE"
-
-# -------------------------
-# Logging Helper Function
-# -------------------------
-log_action() {
-    echo "$(date): $1" | tee -a "$LOG_FILE"
-}
-
-# -------------------------
-# Trap for Cleanup
-# -------------------------
-trap 'log_action "Script interrupted! Cleaning up..."; exit 1' SIGINT SIGTERM
-
-# -------------------------
-# Help Menu
-# -------------------------
-show_help() {
-    echo -e "${YELLOW}Usage:${NC} $0 [OPTION]"
-    echo "Options:"
-    echo "  --help       Show this help message"
-    echo "  --menu       Display the interactive menu"
-    exit 0
-}
-
-# Display help if --help is passed
-if [[ $1 == "--help" ]]; then
-    show_help
-fi
+# Prompt user for input
+read -p "Enter your choice (1-5): " CHOICE
 
 # -------------------------
 # Detect Linux Distribution
 # -------------------------
-detect_linux_distro() {
+function detect_linux_distro() {
     if [ -f /etc/os-release ]; then
         . /etc/os-release
         OS=$ID
+        log_action "Detected Linux distribution: $OS"
+        echo -e "${GREEN}Detected Linux distribution: $OS${NC}"
     else
         log_action "Unable to detect Linux distribution."
         echo -e "${RED}Error: Unable to detect Linux distribution.${NC}"
@@ -66,22 +36,22 @@ detect_linux_distro() {
 update_with_specific_package_manager() {
     case $OS in
         ubuntu|debian|raspbian|pop|zorin|kali|linuxmint|elementary|parrot|deepin|mx|lmde|peppermint|bodhi|devuan|antiX)
-            sudo apt update && log_action "System updated using apt"
+            sudo apt update
             ;;
         centos|rhel|amazon|cloudlinux|scientific|xcp-ng|xenserver)
-            sudo yum update && log_action "System updated using yum"
+            sudo yum update
             ;;
         fedora|rocky|oracle|clear)
-            sudo dnf update && log_action "System updated using dnf"
+            sudo dnf update
             ;;
         opensuse|sles|suse|tumbleweed|leap)
-            sudo zypper refresh && sudo zypper update && log_action "System updated using zypper"
+            sudo zypper refresh && sudo zypper update
             ;;
         arcolinux|artix|arch|manjaro|garuda|endeavouros)
-            sudo pacman -Syu && log_action "System updated using pacman"
+            sudo pacman -Syu
             ;;
         alpine)
-            sudo apk update && log_action "System updated using apk"
+            sudo apk update
             ;;
         *)
             log_action "Unsupported Linux distribution: $OS"
@@ -94,22 +64,22 @@ update_with_specific_package_manager() {
 upgrade_with_specific_package_manager() {
     case $OS in
         ubuntu|debian|raspbian|pop|zorin|kali|linuxmint|elementary|parrot|deepin|mx|lmde|peppermint|bodhi|devuan|antiX)
-            sudo apt upgrade -y && log_action "System upgraded using apt"
+            sudo apt upgrade -y
             ;;
         centos|rhel|amazon|cloudlinux|scientific|xcp-ng|xenserver)
-            sudo yum upgrade -y && log_action "System upgraded using yum"
+            sudo yum upgrade -y
             ;;
         fedora|rocky|oracle|clear)
-            sudo dnf upgrade -y && log_action "System upgraded using dnf"
+            sudo dnf upgrade -y
             ;;
         opensuse|sles|suse|tumbleweed|leap)
-            sudo zypper update -y && log_action "System upgraded using zypper"
+            sudo zypper update -y
             ;;
         arcolinux|artix|arch|manjaro|garuda|endeavouros)
-            sudo pacman -Syu --noconfirm && log_action "System upgraded using pacman"
+            sudo pacman -Syu --noconfirm
             ;;
         alpine)
-            sudo apk upgrade -y && log_action "System upgraded using apk"
+            sudo apk upgrade -y
             ;;
         *)
             log_action "Unsupported Linux distribution: $OS"
@@ -122,45 +92,66 @@ upgrade_with_specific_package_manager() {
 # -------------------------
 # Backup Functionality
 # -------------------------
-backup() {
-    read -p "Enter the full path of the file or directory to back up: " SOURCE_PATH
+function backup() {
+    # Prompt for file or directory to back up
+    read -p "Enter the full path of the file or directory you want to back up: " SOURCE_PATH
 
+    # Verify the file/directory exists
     if [ ! -e "$SOURCE_PATH" ]; then
-        log_action "Error: Path '$SOURCE_PATH' does not exist."
-        echo -e "${RED}Error: The path '$SOURCE_PATH' does not exist.${NC}"
+        echo "Error: The path '$SOURCE_PATH' does not exist. Exiting."
         exit 1
     fi
 
     BASE_NAME=$(basename "$SOURCE_PATH")
-    DATE_TIME=$(date)
+    BACKUP_DIR="/mnt/backup"
+    mkdir -p "$BACKUP_DIR"  # Create backup directory if it doesn't exist
+    DATE_TIME=$(date +%Y%m%d_%H%M%S)
     BACKUP_NAME="backup_${BASE_NAME}_${DATE_TIME}.tar.gz"
     BACKUP_PATH="${BACKUP_DIR}/${BACKUP_NAME}"
 
-    log_action "Backing up '$SOURCE_PATH' to '$BACKUP_PATH'..."
+    # Perform the backup
+    echo "Backing up '$SOURCE_PATH' to '$BACKUP_PATH'..."
     tar -czvf "$BACKUP_PATH" "$SOURCE_PATH"
 
     if [ $? -eq 0 ]; then
-        log_action "Backup successful: $BACKUP_PATH"
-        echo -e "${GREEN}Backup successful! File saved at: $BACKUP_PATH${NC}"
+        echo "Backup successful! File saved at: $BACKUP_PATH"
     else
-        log_action "Backup failed for '$SOURCE_PATH'"
-        echo -e "${RED}Error: Backup failed.${NC}"
+        echo "Backup failed!"
         exit 1
+    fi
+}
+
+# -------------------------
+# Navigation Function
+# -------------------------
+navigate_to() {
+    cd "$1" || { log_action "Failed to navigate to $1. Exiting."; exit 1; }
+}
+
+# -------------------------
+# Confirm Function
+# -------------------------
+confirm_action() {
+    read -rp "$1 (y/n): " CONFIRM
+    if [[ "$CONFIRM" != [yY] ]]; then
+        log_action "$2"
+        echo -e "${YELLOW}$2${NC}"
+        exit 0
     fi
 }
 
 # -------------------------
 # Restore Functionality
 # -------------------------
-restore() {
-    cd "$BACKUP_DIR" || { log_action "Error: Failed to navigate to $BACKUP_DIR"; exit 1; }
+function restore() {
+    BACKUP_DIR="/mnt/backup"
+    cd "$BACKUP_DIR" || { echo "Failed to navigate to $BACKUP_DIR. Exiting."; exit 1; }
 
     echo "Fetching backup files..."
-    BACKUP_FILES=($(ls -1 *.tar.gz))
+    mapfile -t BACKUP_FILES < <(find . -maxdepth 1 -name "*.tar.gz" -print)
 
     if [ ${#BACKUP_FILES[@]} -eq 0 ]; then
-        log_action "No backup files found in $BACKUP_DIR."
-        echo -e "${YELLOW}Warning: No backup files found in $BACKUP_DIR.${NC}"
+        echo "No backup files found in $BACKUP_DIR. Exiting."
         exit 1
     fi
 
@@ -169,41 +160,89 @@ restore() {
         echo "$((i + 1))) ${BACKUP_FILES[$i]}"
     done
 
-    read -p "Enter the number corresponding to your choice: " BACKUP_CHOICE
+    read -rp "Enter the number corresponding to your choice: " BACKUP_CHOICE
 
-    if [[ ! $BACKUP_CHOICE =~ ^[0-9]+$ ]] || [ "$BACKUP_CHOICE" -lt 1 ] || [ "$BACKUP_CHOICE" -gt "${#BACKUP_FILES[@]}" ]; then
-        log_action "Invalid backup selection."
-        echo -e "${RED}Error: Invalid choice.${NC}"
+    # Validate input
+    if [[ ! $BACKUP_CHOICE =~ ^[0-9]+$ ]] || [ "$BACKUP_CHOICE" -lt 1 ] || [ "$BACKUP_CHOICE" -gt "${#BACKUP_FILES[@]}" ]]; then
+        echo "Invalid choice. Exiting."
         exit 1
     fi
 
     SELECTED="${BACKUP_FILES[$((BACKUP_CHOICE - 1))]}"
-    log_action "Restoring backup: $SELECTED"
-
+    echo "Restoring $SELECTED..."
     tar -xzvf "$SELECTED"
 
     if [ $? -eq 0 ]; then
-        log_action "Restore successful: $SELECTED"
-        echo -e "${GREEN}Restore successful!${NC}"
+        echo "Restore successful!"
     else
-        log_action "Restore failed for: $SELECTED"
-        echo -e "${RED}Error: Restore failed.${NC}"
+        echo "Restore failed!"
         exit 1
     fi
 }
 
 # -------------------------
-# Main Menu
+# Clean Log Files
 # -------------------------
-echo "Select the service to proceed: "
-echo "1. Update the system"
-echo "2. Upgrade the system"
-echo "3. Backup important data"
-echo "4. Restore important data"
-echo "5. Exit"
+function clean_log_files() {
+    echo "Navigating to /var/log directory"
+    cd /var/log || { echo "Failed to navigate to /var/log directory. Exiting."; exit 1; }
 
-read -p "Enter your choice (1-5): " CHOICE
+    # Display options to clean logs
+    echo "Select an option:"
+    echo "1) Clear a specific file or folder"
+    echo "2) Remove all log files (*.log)"
+    echo "3) Exit"
 
+    read -p "Enter your choice (1-3): " MAIN_CHOICE
+
+    case $MAIN_CHOICE in
+        1)
+            # Logic to clear a specific file or folder
+            ;;
+        2)
+            echo "Removing all *.log files..."
+            sudo find /var/log -type f -name "*.log" -exec rm -f {} +
+            echo "All *.log files have been removed."
+            ;;
+        3)
+            echo "Exiting. Goodbye!"
+            ;;
+        *)
+            echo "Invalid choice. Exiting."
+            ;;
+    esac
+}
+
+# -------------------------
+# Backup/Restore Menu
+# -------------------------
+function backup_restore_menu() {
+    echo "Select an option:"
+    echo "1) Backup important data"
+    echo "2) Restore important data"
+    echo "3) Exit"
+
+    read -p "Enter your choice (1-3): " BACKUP_RESTORE_CHOICE
+
+    case $BACKUP_RESTORE_CHOICE in
+        1)
+            backup
+            ;;
+        2)
+            restore
+            ;;
+        3)
+            echo "Exiting. Goodbye!"
+            ;;
+        *)
+            echo "Invalid choice. Exiting."
+            ;;
+    esac
+}
+
+# -------------------------
+# Main Menu Execution
+# -------------------------
 case $CHOICE in
     1)
         detect_linux_distro
