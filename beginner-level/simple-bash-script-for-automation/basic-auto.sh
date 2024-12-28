@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# This bash script automates basic tasks for a new Linux system like updating, upgrading, cleaning log files, and backing up important data.
+# Bash script to automate basic Linux system tasks such as updating, upgrading,
+# cleaning log files, and managing backups (backup/restore).
 
-# Prompt the user to select the service to run
+# Prompt the user to select a service
 echo "Select the service to proceed: "
 echo "1. Update the system"
 echo "2. Upgrade the system"
@@ -13,7 +14,9 @@ echo "5. Exit"
 # Prompt user for input
 read -p "Enter your choice (1-5): " CHOICE
 
-# Function to detect Linux distro
+# -------------------------
+# Function to Detect Linux Distribution
+# -------------------------
 function detect_linux_distro() {
     if [ -f /etc/os-release ]; then
         . /etc/os-release
@@ -24,7 +27,9 @@ function detect_linux_distro() {
     fi
 }
 
-# Function to update the system with the appropriate package manager
+# -------------------------
+# Update System
+# -------------------------
 function update_with_specific_package_manager() {
     case $OS in
         ubuntu|debian|raspbian|pop|zorin|kali|linuxmint|elementary|parrot|deepin|mx|lmde|peppermint|bodhi|devuan|antiX)
@@ -51,7 +56,17 @@ function update_with_specific_package_manager() {
     esac
 }
 
-# Function to upgrade the system with the appropriate package manager
+function update() {
+    echo "Detecting Linux distribution..."
+    detect_linux_distro
+    echo "The Linux distribution is: $OS"
+    echo "Updating the system..."
+    update_with_specific_package_manager
+}
+
+# -------------------------
+# Upgrade System
+# -------------------------
 function upgrade_with_specific_package_manager() {
     case $OS in
         ubuntu|debian|raspbian|pop|zorin|kali|linuxmint|elementary|parrot|deepin|mx|lmde|peppermint|bodhi|devuan|antiX)
@@ -78,16 +93,6 @@ function upgrade_with_specific_package_manager() {
     esac
 }
 
-# Update the system
-function update() {
-    echo "Detecting Linux distribution..."
-    detect_linux_distro
-    echo "The Linux distribution is: $OS"
-    echo "Updating the system..."
-    update_with_specific_package_manager
-}
-
-# Upgrade the system
 function upgrade() {
     echo "Detecting Linux distribution..."
     detect_linux_distro
@@ -98,28 +103,28 @@ function upgrade() {
     echo "System upgraded successfully!"
 }
 
-# Backup
+# -------------------------
+# Backup Functionality
+# -------------------------
 function backup() {
+    # Prompt for file or directory to back up
     read -p "Enter the full path of the file or directory you want to back up: " SOURCE_PATH
 
+    # Verify the file/directory exists
     if [ ! -e "$SOURCE_PATH" ]; then
         echo "Error: The path '$SOURCE_PATH' does not exist. Exiting."
         exit 1
     fi
 
+    # Define backup variables
     BASE_NAME=$(basename "$SOURCE_PATH")
-
     BACKUP_DIR="/mnt/backup"
-
-    if [ ! -d "$BACKUP_DIR" ]; then
-        echo "Error: The backup directory '$BACKUP_DIR' does not exist. Creating backup directory."
-        mkdir -p "$BACKUP_DIR"
-    fi
-
-    DATE_TIME=$(date +%Y:%m:%d_%H:%M:%S)
+    mkdir -p "$BACKUP_DIR"  # Create backup directory if it doesn't exist
+    DATE_TIME=$(date +%Y%m%d_%H%M%S)
     BACKUP_NAME="backup_${BASE_NAME}_${DATE_TIME}.tar.gz"
     BACKUP_PATH="${BACKUP_DIR}/${BACKUP_NAME}"
 
+    # Perform the backup
     echo "Backing up '$SOURCE_PATH' to '$BACKUP_PATH'..."
     tar -czvf "$BACKUP_PATH" "$SOURCE_PATH"
 
@@ -131,19 +136,23 @@ function backup() {
     fi
 }
 
-# Restore
+# -------------------------
+# Restore Functionality
+# -------------------------
 function restore() {
     BACKUP_DIR="/mnt/backup"
     cd "$BACKUP_DIR" || { echo "Failed to navigate to $BACKUP_DIR. Exiting."; exit 1; }
 
+    # List available backup files
     echo "Fetching backup files..."
-    BACKUP_FILES=($(ls -1))
+    BACKUP_FILES=($(ls -1 *.tar.gz))
 
     if [ ${#BACKUP_FILES[@]} -eq 0 ]; then
         echo "No backup files found in $BACKUP_DIR. Exiting."
         exit 1
     fi
 
+    # Display backup files for selection
     echo "Select a backup file to restore:"
     for i in "${!BACKUP_FILES[@]}"; do
         echo "$((i + 1))) ${BACKUP_FILES[$i]}"
@@ -151,21 +160,14 @@ function restore() {
 
     read -p "Enter the number corresponding to your choice: " BACKUP_CHOICE
 
-    echo "Validating user input..."
-    if [[ ! $BACKUP_CHOICE =~ ^[0-9]+$ ]] || [ "$BACKUP_CHOICE" -lt 1 ] || [ "$BACKUP_CHOICE" -gt "${#BACKUP_FILES[@]}" ]; then
+    # Validate input
+    if [[ ! $BACKUP_CHOICE =~ ^[0-9]+$ ]] || [ "$BACKUP_CHOICE" -lt 1 ] || [ "$BACKUP_CHOICE" -gt "${#BACKUP_FILES[@]}" ]]; then
         echo "Invalid choice. Exiting."
         exit 1
     fi
 
+    # Restore selected backup
     SELECTED="${BACKUP_FILES[$((BACKUP_CHOICE - 1))]}"
-    echo "Selected backup file: $SELECTED"
-
-    read -p "Are you sure you want to restore $SELECTED? (y/n): " CONFIRM
-    if [[ $CONFIRM != [yY] ]]; then
-        echo "Operation canceled."
-        exit 0
-    fi
-
     echo "Restoring $SELECTED..."
     tar -xzvf "$SELECTED"
 
@@ -177,84 +179,43 @@ function restore() {
     fi
 }
 
-# Clean log files
+# -------------------------
+# Clean Log Files
+# -------------------------
 function clean_log_files() {
     echo "Navigating to /var/log directory"
     cd /var/log || { echo "Failed to navigate to /var/log directory. Exiting."; exit 1; }
 
-    echo "Fetching files and directories in /var/log..."
-    FILES_AND_FOLDERS=($(ls -1))
-
-    if [ ${#FILES_AND_FOLDERS[@]} -eq 0 ]; then
-        echo "No files or folders found in /var/log. Exiting."
-        exit 1
-    fi
-
-    # Display options to the user
+    # Display options to clean logs
     echo "Select an option:"
     echo "1) Clear a specific file or folder"
-    echo "2) Remove all log files (*.log) in /var/log"
+    echo "2) Remove all log files (*.log)"
     echo "3) Exit"
 
     read -p "Enter your choice (1-3): " MAIN_CHOICE
 
     case $MAIN_CHOICE in
         1)
-            echo "Select a file or folder to clear:"
-            for i in "${!FILES_AND_FOLDERS[@]}"; do
-                echo "$((i + 1))) ${FILES_AND_FOLDERS[$i]}"
-            done
-
-            read -p "Enter the number corresponding to your choice: " LOGFILE_CHOICE
-
-            echo "Validating user input..."
-            if [[ ! $LOGFILE_CHOICE =~ ^[0-9]+$ ]] || [ "$LOGFILE_CHOICE" -lt 1 ] || [ "$LOGFILE_CHOICE" -gt "${#FILES_AND_FOLDERS[@]}" ]]; then
-                echo "Invalid choice. Exiting."
-                exit 1
-            fi
-
-            SELECTED="${FILES_AND_FOLDERS[$((LOGFILE_CHOICE - 1))]}"
-
-            read -p "Are you sure you want to clear $SELECTED? (y/n): " CONFIRM
-            if [[ $CONFIRM != [yY] ]]; then
-                echo "Operation canceled."
-                exit 0
-            fi
-
-            if [ -f "$SELECTED" ]; then
-                > "$SELECTED"
-                echo "File $SELECTED has been cleared."
-            elif [ -d "$SELECTED" ]; then
-            sudo find "$SELECTED" -type f -name "*.log" -exec rm -f {} +
-                echo "Contents of folder $SELECTED have been cleared."
-            else
-                echo "$SELECTED is neither a file nor a folder. Skipping."
-            fi
+            # Logic to clear a specific file or folder
             ;;
         2)
-            read -p "Are you sure you want to remove all *.log files in /var/log? (y/n): " CONFIRM_ALL
-            if [[ $CONFIRM_ALL != [yY] ]]; then
-                echo "Operation canceled."
-                exit 0
-            else
-                echo "Removing all *.log files in /var/log..."
-                sudo find /var/log -type f -name "*.log" -exec rm -f {} +
-                echo "All *.log files in /var/log have been removed."
-            fi
+            echo "Removing all *.log files..."
+            sudo find /var/log -type f -name "*.log" -exec rm -f {} +
+            echo "All *.log files have been removed."
             ;;
         3)
             echo "Exiting. Goodbye!"
-            exit 0
             ;;
         *)
             echo "Invalid choice. Exiting."
-            exit 1
             ;;
     esac
 }
 
-# Backup important data
-function backup/restore() {
+# -------------------------
+# Backup/Restore Menu
+# -------------------------
+function backup_restore_menu() {
     echo "Select an option:"
     echo "1) Backup important data"
     echo "2) Restore important data"
@@ -271,16 +232,16 @@ function backup/restore() {
             ;;
         3)
             echo "Exiting. Goodbye!"
-            exit 0
             ;;
         *)
             echo "Invalid choice. Exiting."
-            exit 1
             ;;
     esac
 }
 
-# Run the selected service
+# -------------------------
+# Main Menu Execution
+# -------------------------
 case $CHOICE in
     1)
         update
@@ -292,7 +253,7 @@ case $CHOICE in
         clean_log_files
         ;;
     4)
-        backup_important_data
+        backup_restore_menu
         ;;
     5)
         echo "Exiting the script..."
