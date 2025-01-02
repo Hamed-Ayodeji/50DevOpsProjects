@@ -252,9 +252,14 @@ restore() {
     read -rp "Enter the full path to restore the backup to: " RESTORE_DIR
 
     if [[ ! -d "$RESTORE_DIR" ]]; then
-        log_action "Error: Restore path '$RESTORE_DIR' does not exist."
-        echo -e "${RED}Error: Restore path '$RESTORE_DIR' does not exist.${NC}"
-        exit 1
+        read -rp "Restore directory does not exist. Create it? (y/n): " CREATE_DIR
+        if [[ "$CREATE_DIR" == [yY] ]]; then
+            mkdir -p "$RESTORE_DIR"
+            log_action "Restore directory $RESTORE_DIR created."
+        else
+            log_action "Restore canceled. Directory $RESTORE_DIR does not exist."
+            exit 1
+        fi
     fi
 
     log_action "Restoring backup: $SELECTED"
@@ -380,39 +385,44 @@ backup_restore_menu() {
 # -------------------------
 
 # Prompt the user to select a service
-echo "Select the service to proceed: "
-echo "1. Update the system"
-echo "2. Upgrade the system"
-echo "3. Clean log files"
-echo "4. Backup or Restore important data"
-echo "5. Exit"
+while true; do
+    echo "Select the service to proceed: "
+    echo "1. Update the system"
+    echo "2. Upgrade the system"
+    echo "3. Clean log files"
+    echo "4. Backup or Restore important data"
+    echo "5. Exit"
 
-# Prompt user for input
-read -rp "Enter your choice (1-5): " CHOICE
+    # Prompt user for input
+    read -rp "Enter your choice (1-5): " CHOICE
 
-case $CHOICE in
-    1)
-        detect_linux_distro
-        update_with_specific_package_manager
-        ;;
-    2)
-        detect_linux_distro
-        upgrade_with_specific_package_manager
-        ;;
-    3)
-        clean_log_files
-        ;;
-    4)
-        backup_restore_menu
-        ;;
-    5)
-        log_action "Script exited by user."
-        echo "Exiting the script..."
-        exit 0
-        ;;
-    *)
-        log_action "Invalid menu choice: $CHOICE"
-        echo -e "${RED}Invalid choice. Please select a number between 1-5.${NC}"
-        exit 1
-        ;;
-esac
+    case $CHOICE in
+        1)
+            detect_linux_distro
+            update_with_specific_package_manager
+            break
+            ;;
+        2)
+            detect_linux_distro
+            upgrade_with_specific_package_manager
+            break
+            ;;
+        3)
+            clean_log_files
+            break
+            ;;
+        4)
+            backup_restore_menu
+            break
+            ;;
+        5)
+            log_action "Script exited by user."
+            echo "Exiting the script..."
+            exit 0
+            ;;
+        *)
+            log_action "Invalid menu choice: $CHOICE"
+            echo -e "${RED}Invalid choice. Please select a number between 1-5.${NC}"
+            ;;
+    esac
+done
