@@ -315,13 +315,16 @@ clean_log_files() {
                     echo "$((i + 1))) ${LOG_FILES[$i]}"
                 done
 
-                read -rp "Enter the number corresponding to your choice: " LOG_CHOICE
+                while true; do
+                    read -rp "Enter the number corresponding to your choice: " LOG_CHOICE
 
-                if [[ ! $LOG_CHOICE =~ ^[0-9]+$ ]] || [ "$LOG_CHOICE" -lt 1 ] || [ "$LOG_CHOICE" -gt "${#LOG_FILES[@]}" ]; then
-                    log_action "Invalid choice: $LOG_CHOICE."
-                    echo -e "${RED}Invalid choice: $LOG_CHOICE.${NC}"
-                    continue  # Return to the menu
-                fi
+                    if [[ ! $LOG_CHOICE =~ ^[0-9]+$ ]] || [ "$LOG_CHOICE" -lt 1 ] || [ "$LOG_CHOICE" -gt "${#LOG_FILES[@]}" ]]; then
+                        log_action "Invalid choice: $LOG_CHOICE."
+                        echo -e "${RED}Invalid choice: $LOG_CHOICE.${NC}"
+                        continue  # Prompt again
+                    fi
+                    break
+                done
 
                 SELECTED="${LOG_FILES[$((LOG_CHOICE - 1))]}"
 
