@@ -105,7 +105,7 @@ update_with_specific_package_manager() {
             apt update || { log_action "Failed to update system using apt."; exit 1; }
             log_action "System updated using apt"
             ;;
-        centos|rhel|amazon|cloudlinux|scientific|xcp-ng|xenserver)
+        centos|rhel|amazon|cloudlinux|scientific|xcp-ng|xenserver|almalinux)
             log_action "Updating system using yum..."
             yum update || { log_action "Failed to update system using yum."; exit 1; }
             log_action "System updated using yum"
@@ -145,7 +145,7 @@ upgrade_with_specific_package_manager() {
             apt upgrade -y || { log_action "Failed to upgrade system using apt."; exit 1; }
             log_action "System upgraded using apt"
             ;;
-        centos|rhel|amazon|cloudlinux|scientific|xcp-ng|xenserver)
+        centos|rhel|amazon|cloudlinux|scientific|xcp-ng|xenserver|almalinux)
             log_action "Upgrading system using yum..."
             yum upgrade -y || { log_action "Failed to upgrade system using yum."; exit 1; }
             log_action "System upgraded using yum"
