@@ -291,62 +291,66 @@ clean_log_files() {
         exit 1
     fi
 
-    echo "Select an option:"
-    echo "1) Clear a specific file or directory"
-    echo "2) Remove all log files (*.log) in /var/log"
-    echo "3) Exit"
+    while true; do
+        echo "Select an option:"
+        echo "1) Clear a specific file or directory"
+        echo "2) Remove all log files (*.log) in /var/log"
+        echo "3) Exit"
 
-    read -rp "Enter your choice (1-3): " MAIN_CHOICE
+        read -rp "Enter your choice (1-3): " MAIN_CHOICE
 
-    case $MAIN_CHOICE in
-        1)
-            echo "Select a file or directory to clear:"
-            for i in "${!LOG_FILES[@]}"; do
-                echo "$((i + 1))) ${LOG_FILES[$i]}"
-            done
+        case $MAIN_CHOICE in
+            1)
+                echo "Select a file or directory to clear:"
+                for i in "${!LOG_FILES[@]}"; do
+                    echo "$((i + 1))) ${LOG_FILES[$i]}"
+                done
 
-            read -rp "Enter the number corresponding to your choice: " LOG_CHOICE
+                read -rp "Enter the number corresponding to your choice: " LOG_CHOICE
 
-            if [[ ! $LOG_CHOICE =~ ^[0-9]+$ ]] || [ "$LOG_CHOICE" -lt 1 ] || [ "$LOG_CHOICE" -gt "${#LOG_FILES[@]}" ]; then
-                log_action "Invalid choice: $LOG_CHOICE. Exiting."
-                echo -e "${RED}Invalid choice: $LOG_CHOICE. Exiting.${NC}"
-                exit 1
-            fi
+                if [[ ! $LOG_CHOICE =~ ^[0-9]+$ ]] || [ "$LOG_CHOICE" -lt 1 ] || [ "$LOG_CHOICE" -gt "${#LOG_FILES[@]}" ]; then
+                    log_action "Invalid choice: $LOG_CHOICE. Exiting."
+                    echo -e "${RED}Invalid choice: $LOG_CHOICE. Exiting.${NC}"
+                    exit 1
+                fi
 
-            SELECTED="${LOG_FILES[$((LOG_CHOICE - 1))]}"
+                SELECTED="${LOG_FILES[$((LOG_CHOICE - 1))]}"
 
-            confirm_action "Are you sure you want to clear $SELECTED?" "User chose not to clear $SELECTED. Exiting."
+                confirm_action "Are you sure you want to clear $SELECTED?" "User chose not to clear $SELECTED. Exiting."
 
-            if [ -f "$SELECTED" ]; then
-                log_action "Clearing $SELECTED..."
-                > "$SELECTED"
-                echo "$SELECTED has been cleared."
-            elif [ -d "$SELECTED" ]; then
-                log_action "Clearing contents of $SELECTED..."
-                find "$SELECTED" -type f -name "*.log" -exec rm -f {} +
-                echo "Contents of $SELECTED have been cleared."
-            else
-                log_action "Error: $SELECTED is not a file or directory."
-                echo -e "${RED}Error: $SELECTED is not a file or directory.${NC}"
-                exit 1
-            fi
-            ;;
-        2)
-            confirm_action "Are you sure you want to remove all log files (*.log) in /var/log?" "User chose not to remove all log files. Exiting."
+                if [ -f "$SELECTED" ]; then
+                    log_action "Clearing $SELECTED..."
+                    > "$SELECTED"
+                    echo "$SELECTED has been cleared."
+                elif [ -d "$SELECTED" ]; then
+                    log_action "Clearing contents of $SELECTED..."
+                    find "$SELECTED" -type f -name "*.log" -exec rm -f {} +
+                    echo "Contents of $SELECTED have been cleared."
+                else
+                    log_action "Error: $SELECTED is not a file or directory."
+                    echo -e "${RED}Error: $SELECTED is not a file or directory.${NC}"
+                    exit 1
+                fi
+                break
+                ;;
+            2)
+                confirm_action "Are you sure you want to remove all log files (*.log) in /var/log?" "User chose not to remove all log files. Exiting."
 
-            log_action "Removing all log files in /var/log..."
-            find /var/log -type f -name "*.log" -exec rm -f {} +
-            echo -e "${GREEN}All log files in /var/log have been removed.${NC}"
-            ;;
-        3)
-            log_action "Exiting clean log files menu."
-            echo "Exiting clean log files menu."
-            ;;
-        *)
-            log_action "Invalid choice: $MAIN_CHOICE"
-            echo -e "${RED}Invalid choice: $MAIN_CHOICE${NC}"
-            ;;
-    esac
+                log_action "Removing all log files in /var/log..."
+                find /var/log -type f -name "*.log" -exec rm -f {} +
+                echo -e "${GREEN}All log files in /var/log have been removed.${NC}"
+                break
+                ;;
+            3)
+                log_action "Exiting clean log files menu."
+                echo "Exiting clean log files menu."
+                ;;
+            *)
+                log_action "Invalid choice: $MAIN_CHOICE"
+                echo -e "${RED}Invalid choice: $MAIN_CHOICE${NC}"
+                ;;
+        esac
+    done
 }
 
 # -------------------------
