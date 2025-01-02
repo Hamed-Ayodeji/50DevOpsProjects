@@ -31,6 +31,22 @@ fi
 mkdir -p "$BACKUP_DIR"
 touch "$LOG_FILE"
 
+# -------------------------
+# Logging Helper Function
+# -------------------------
+log_action() {
+    echo "$(date --iso-8601=seconds): $1" | tee -a "$LOG_FILE"
+}
+
+# -------------------------
+# Log Rotation
+# -------------------------
+# Rotate log files if they exceed a certain size
+if [[ -f "$LOG_FILE" && $(stat --format=%s "$LOG_FILE") -gt 10485760 ]]; then
+    mv "$LOG_FILE" "${LOG_FILE}.old"
+    log_action "Log file rotated."
+fi
+
 # Ensure the log directory exists
 if [[ ! -d "$LOG_DIR" ]]; then
     mkdir -p "$LOG_DIR"
@@ -38,19 +54,12 @@ if [[ ! -d "$LOG_DIR" ]]; then
     echo -e "${YELLOW}Log directory $LOG_DIR created.${NC}"
 fi
 
-
-# -------------------------
-# Logging Helper Function
-# -------------------------
-log_action() {
-    echo "$(date): $1" | tee -a "$LOG_FILE"
-}
-
 # -------------------------
 # Trap for Cleanup
 # -------------------------
 trap 'EXIT_CODE=$?; [[ $EXIT_CODE -eq 0 ]] && log_action "Script exited successfully." || log_action "Script exited with error code $EXIT_CODE."' EXIT
 trap 'log_action "Script interrupted! Cleaning up..."; exit 1' SIGINT SIGTERM
+trap 'log_action "Script encountered an error. Exiting..."; exit 1' ERR
 
 # -------------------------
 # Help Menu
@@ -214,7 +223,7 @@ confirm_action() {
     if [[ "$CONFIRM" != [yY] ]]; then
         log_action "$2"
         echo -e "${YELLOW}$2${NC}"
-        exit 0
+        return 1
     fi
 }
 
@@ -330,7 +339,6 @@ clean_log_files() {
                     log_action "Error: $SELECTED is not a file or directory."
                     echo -e "${RED}Error: $SELECTED is not a file or directory.${NC}"
                 fi
-                break
                 ;;
             2)
                 confirm_action "Are you sure you want to remove all log files (*.log) in /var/log?" "User chose not to remove all log files. Returning to menu."
@@ -338,7 +346,6 @@ clean_log_files() {
                 log_action "Removing all log files in /var/log..."
                 find /var/log -type f -name "*.log" -exec rm -f {} +
                 echo -e "${GREEN}All log files in /var/log have been removed.${NC}"
-                break
                 ;;
             3)
                 log_action "Exiting clean log files menu."
@@ -367,12 +374,14 @@ backup_restore_menu() {
 
         case $BACKUP_RESTORE_CHOICE in
             1)
+                log_action "User selected backup option."
                 backup
-                break
+                echo -e "${GREEN}Backup completed successfully.${NC}"
                 ;;
             2)
+                log_action "User selected restore option."
                 restore
-                break
+                echo -e "${GREEN}Restore completed successfully.${NC}"
                 ;;
             3)
                 log_action "Exiting backup/restore menu."
@@ -407,20 +416,16 @@ while true; do
         1)
             detect_linux_distro
             update_with_specific_package_manager
-            break
             ;;
         2)
             detect_linux_distro
             upgrade_with_specific_package_manager
-            break
             ;;
         3)
             clean_log_files
-            break
             ;;
         4)
             backup_restore_menu
-            break
             ;;
         5)
             log_action "Script exited by user."
