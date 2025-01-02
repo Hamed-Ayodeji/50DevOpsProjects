@@ -318,7 +318,7 @@ clean_log_files() {
                 while true; do
                     read -rp "Enter the number corresponding to your choice: " LOG_CHOICE
 
-                    if [[ ! $LOG_CHOICE =~ ^[0-9]+$ ]] || [ "$LOG_CHOICE" -lt 1 ] || [ "$LOG_CHOICE" -gt "${#LOG_FILES[@]}" ]]; then
+                    if [[ ! $LOG_CHOICE =~ ^[0-9]+$ ]] || [ "$LOG_CHOICE" -lt 1 ] || [[ "$LOG_CHOICE" -gt "${#LOG_FILES[@]}" ]]; then
                         log_action "Invalid choice: $LOG_CHOICE."
                         echo -e "${RED}Invalid choice: $LOG_CHOICE.${NC}"
                         continue
