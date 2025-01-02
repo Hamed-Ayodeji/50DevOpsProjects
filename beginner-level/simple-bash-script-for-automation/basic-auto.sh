@@ -288,7 +288,7 @@ clean_log_files() {
     if [ ${#LOG_FILES[@]} -eq 0 ]; then
         log_action "No files found in /var/log. Exiting."
         echo -e "${YELLOW}No files found in /var/log. Exiting.${NC}"
-        exit 1
+        return  # Use return instead of exit to allow the script to continue
     fi
 
     while true; do
@@ -309,14 +309,14 @@ clean_log_files() {
                 read -rp "Enter the number corresponding to your choice: " LOG_CHOICE
 
                 if [[ ! $LOG_CHOICE =~ ^[0-9]+$ ]] || [ "$LOG_CHOICE" -lt 1 ] || [ "$LOG_CHOICE" -gt "${#LOG_FILES[@]}" ]; then
-                    log_action "Invalid choice: $LOG_CHOICE. Exiting."
-                    echo -e "${RED}Invalid choice: $LOG_CHOICE. Exiting.${NC}"
-                    exit 1
+                    log_action "Invalid choice: $LOG_CHOICE."
+                    echo -e "${RED}Invalid choice: $LOG_CHOICE.${NC}"
+                    continue  # Return to the menu
                 fi
 
                 SELECTED="${LOG_FILES[$((LOG_CHOICE - 1))]}"
 
-                confirm_action "Are you sure you want to clear $SELECTED?" "User chose not to clear $SELECTED. Exiting."
+                confirm_action "Are you sure you want to clear $SELECTED?" "User chose not to clear $SELECTED. Returning to menu."
 
                 if [ -f "$SELECTED" ]; then
                     log_action "Clearing $SELECTED..."
@@ -329,12 +329,11 @@ clean_log_files() {
                 else
                     log_action "Error: $SELECTED is not a file or directory."
                     echo -e "${RED}Error: $SELECTED is not a file or directory.${NC}"
-                    exit 1
                 fi
                 break
                 ;;
             2)
-                confirm_action "Are you sure you want to remove all log files (*.log) in /var/log?" "User chose not to remove all log files. Exiting."
+                confirm_action "Are you sure you want to remove all log files (*.log) in /var/log?" "User chose not to remove all log files. Returning to menu."
 
                 log_action "Removing all log files in /var/log..."
                 find /var/log -type f -name "*.log" -exec rm -f {} +
@@ -344,10 +343,11 @@ clean_log_files() {
             3)
                 log_action "Exiting clean log files menu."
                 echo "Exiting clean log files menu."
+                return  # Exit the function and loop gracefully
                 ;;
             *)
                 log_action "Invalid choice: $MAIN_CHOICE"
-                echo -e "${RED}Invalid choice: $MAIN_CHOICE${NC}"
+                echo -e "${RED}Invalid choice. Please select a valid option.${NC}"
                 ;;
         esac
     done
@@ -357,31 +357,34 @@ clean_log_files() {
 # Backup/Restore Menu
 # -------------------------
 backup_restore_menu() {
-    echo "Select an option:"
-    echo "1) Backup important data"
-    echo "2) Restore important data"
-    echo "3) Exit"
+    while true; do
+        echo "Select an option:"
+        echo "1) Backup important data"
+        echo "2) Restore data from backup"
+        echo "3) Exit"
 
-    read -rp "Enter your choice (1-3): " BACKUP_RESTORE_CHOICE
+        read -rp "Enter your choice (1-3): " BACKUP_RESTORE_CHOICE
 
-    case $BACKUP_RESTORE_CHOICE in
-        1)
-            backup
-            ;;
-        2)
-            restore
-            ;;
-        3)
-            log_action "Exiting backup/restore menu."
-            echo "Exiting backup/restore menu."
-            exit 0
-            ;;
-        *)
-            log_action "Invalid choice: $BACKUP_RESTORE_CHOICE"
-            echo -e "${RED}Invalid choice: $BACKUP_RESTORE_CHOICE${NC}"
-            exit 1
-            ;;
-    esac
+        case $BACKUP_RESTORE_CHOICE in
+            1)
+                backup
+                break
+                ;;
+            2)
+                restore
+                break
+                ;;
+            3)
+                log_action "Exiting backup/restore menu."
+                echo "Exiting backup/restore menu."
+                return  # Exit the function and loop gracefully
+                ;;
+            *)
+                log_action "Invalid choice: $BACKUP_RESTORE_CHOICE"
+                echo -e "${RED}Invalid choice. Please select a valid option.${NC}"
+                ;;
+        esac
+    done
 }
 
 # -------------------------
