@@ -336,7 +336,7 @@ clean_log_files() {
                     echo -e "${GREEN}$SELECTED has been cleared.${NC}"
                 elif [ -d "$SELECTED" ]; then
                     log_action "Clearing contents of directory: $SELECTED"
-                    find "$SELECTED" -type f -name "*.log" -exec rm -f {} +
+                    find "$SELECTED" -type f -name "*.log" -exec truncate -s 0 {} +
                     echo -e "${GREEN}Contents of $SELECTED have been cleared.${NC}"
                 else
                     log_action "Error: $SELECTED is not a valid file or directory."
@@ -347,7 +347,7 @@ clean_log_files() {
                 confirm_action "Are you sure you want to remove all log files (*.log) in $LOG_DIR?" "User chose not to remove all log files. Returning to menu."
 
                 log_action "Removing all log files in $LOG_DIR..."
-                find "$LOG_DIR" -type f -name "*.log" -exec rm -f {} +
+                find "$LOG_DIR" -type f -name "*.log" -exec truncate -s 0 {} +
                 echo -e "${GREEN}All log files in $LOG_DIR have been removed.${NC}"
                 ;;
             3)
