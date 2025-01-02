@@ -363,7 +363,6 @@ clean_log_files() {
     done
 }
 
-
 # -------------------------
 # Backup/Restore Menu
 # -------------------------
