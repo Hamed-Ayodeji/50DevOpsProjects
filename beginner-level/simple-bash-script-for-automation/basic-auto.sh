@@ -239,7 +239,7 @@ restore() {
     if [ ${#BACKUP_FILES[@]} -eq 0 ]; then
         log_action "No backup files found in $BACKUP_DIR. Exiting."
         echo -e "${YELLOW}No backup files found in $BACKUP_DIR. Exiting.${NC}"
-        exit 1
+        return 1
     fi
 
     echo "Select a backup file to restore:"
@@ -247,13 +247,16 @@ restore() {
         echo "$((i + 1))) ${BACKUP_FILES[$i]}"
     done
 
-    read -rp "Enter the number corresponding to your choice: " BACKUP_CHOICE
+    while true; do
+        read -rp "Enter the number corresponding to your choice: " BACKUP_CHOICE
 
-    if [[ ! $BACKUP_CHOICE =~ ^[0-9]+$ ]] || [ "$BACKUP_CHOICE" -lt 1 ] || [[ "$BACKUP_CHOICE" -gt "${#BACKUP_FILES[@]}" ]]; then
-        log_action "Invalid choice: $BACKUP_CHOICE. Exiting."
-        echo -e "${RED}Invalid choice: $BACKUP_CHOICE. Exiting.${NC}"
-        return 1
-    fi
+        if [[ ! $BACKUP_CHOICE =~ ^[0-9]+$ ]] || [ "$BACKUP_CHOICE" -lt 1 ] || [[ "$BACKUP_CHOICE" -gt "${#BACKUP_FILES[@]}" ]]; then
+            log_action "Invalid choice: $BACKUP_CHOICE."
+            echo -e "${RED}Invalid choice: $BACKUP_CHOICE.${NC}"
+            continue
+        fi
+        break
+    done
 
     # Restore selected backup
     SELECTED="${BACKUP_FILES[$((BACKUP_CHOICE - 1))]}"
