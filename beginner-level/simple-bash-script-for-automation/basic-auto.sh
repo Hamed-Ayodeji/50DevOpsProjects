@@ -248,9 +248,18 @@ restore() {
 
     # Restore selected backup
     SELECTED="${BACKUP_FILES[$((BACKUP_CHOICE - 1))]}"
+    
+    read -rp "Enter the full path to restore the backup to: " RESTORE_DIR
+
+    if [[ ! -d "$RESTORE_DIR" ]]; then
+        log_action "Error: Restore path '$RESTORE_DIR' does not exist."
+        echo -e "${RED}Error: Restore path '$RESTORE_DIR' does not exist.${NC}"
+        exit 1
+    fi
+
     log_action "Restoring backup: $SELECTED"
     
-    tar -xzvf "$SELECTED"
+    tar -xzvf "$SELECTED" -C "$RESTORE_DIR"
 
     if [ $? -eq 0 ]; then
         log_action "Restore successful: $SELECTED"
