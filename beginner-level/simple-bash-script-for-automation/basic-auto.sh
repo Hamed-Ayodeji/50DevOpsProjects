@@ -346,9 +346,9 @@ clean_log_files() {
             2)
                 confirm_action "Are you sure you want to remove all log files (*.log) in $LOG_DIR?" "User chose not to remove all log files. Returning to menu."
 
-                log_action "Removing all log files in $LOG_DIR..."
+                log_action "Clearing all log files in $LOG_DIR..."
                 find "$LOG_DIR" -type f -name "*.log" -exec truncate -s 0 {} +
-                echo -e "${GREEN}All log files in $LOG_DIR have been removed.${NC}"
+                echo -e "${GREEN}All log files in $LOG_DIR have been cleared.${NC}"
                 ;;
             3)
                 log_action "Exiting clean log files menu."
