@@ -187,7 +187,7 @@ backup() {
     if [[ ! -e "$SOURCE_PATH" ]]; then
         log_action "Error: Source path '$SOURCE_PATH' does not exist."
         echo -e "${RED}Error: Source path '$SOURCE_PATH' does not exist.${NC}"
-        exit 1
+        return 1
     fi
 
     BASE_NAME=$(basename "$SOURCE_PATH")
