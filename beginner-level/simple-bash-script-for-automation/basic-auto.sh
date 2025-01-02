@@ -252,7 +252,7 @@ restore() {
     if [[ ! $BACKUP_CHOICE =~ ^[0-9]+$ ]] || [ "$BACKUP_CHOICE" -lt 1 ] || [[ "$BACKUP_CHOICE" -gt "${#BACKUP_FILES[@]}" ]]; then
         log_action "Invalid choice: $BACKUP_CHOICE. Exiting."
         echo -e "${RED}Invalid choice: $BACKUP_CHOICE. Exiting.${NC}"
-        exit 1
+        return 1
     fi
 
     # Restore selected backup
@@ -267,7 +267,8 @@ restore() {
             log_action "Restore directory $RESTORE_DIR created."
         else
             log_action "Restore canceled. Directory $RESTORE_DIR does not exist."
-            exit 1
+            echo -e "${YELLOW}Restore canceled. Directory $RESTORE_DIR does not exist.${NC}"
+            return 1
         fi
     fi
 
