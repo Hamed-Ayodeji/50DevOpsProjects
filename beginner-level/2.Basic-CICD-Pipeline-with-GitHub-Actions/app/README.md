@@ -76,7 +76,7 @@ Hello, Bob!
 
 ### 2. **Usage**  
 
-- Run the script using:
+- Run the script using:  
 
      ```bash
      python app.main.py

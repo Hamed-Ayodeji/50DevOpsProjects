@@ -24,7 +24,7 @@ jobs:
       - name: Test the codebase
         run: |
           pip install -r ${{ env.REQUIREMENTS_FILE }}
-          python -m unittest ${{ env.TEST_PATH }}.test-main
+          python -m unittest "${{ env.TEST_PATH }}.test-main"
 
   deploy:
     needs: test
