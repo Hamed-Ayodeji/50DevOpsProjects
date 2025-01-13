@@ -81,6 +81,7 @@ jobs:
           if [ "$exists" = "true" ]; then
             echo "Droplet exists. Updating application..."
             doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path ~/.ssh/id_ed25519 --ssh-command "
+              echo 'Updating application...' && \
               rm -rf ${{ env.LOCAL_PATH }} && \
               sudo apt update -y && \
               sudo apt install -y software-properties-common && \
@@ -96,16 +97,26 @@ jobs:
           else
             echo "Creating new droplet and deploying application..."
             doctl compute droplet create ${{ env.DROPLET_NAME }} --image ${{ env.IMAGE }} --region ${{ env.REGION }} --size ${{ env.SIZE }} --ssh-keys ${{ secrets.DIGITALOCEAN_SSH_KEY_ID }} --wait
-            doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path ~/.ssh/id_ed25519 --ssh-command "
-              sudo apt update -y && \
-              sudo apt install -y software-properties-common && \
-              sudo apt-add-repository universe && \
-              sudo apt update -y && \
-              sudo apt install -y python3 python3-venv python3-pip git && \
-              git clone ${{ env.GIT_REPO }} ${{ env.LOCAL_PATH }} && \
-              cd ${{ env.APP_PATH }} && \
-              python3 -m venv venv && \
-              source venv/bin/activate && \
-              pip install -r ${{ env.REQUIREMENTS_FILE }}
-            "
+            echo "Waiting for droplet initialization..."
+            sleep 30
+            for i in {1..5}; do
+              echo "Attempt $i: Connecting to droplet..."
+              if doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path ~/.ssh/id_ed25519 --ssh-command "
+                echo 'Deploying application...' && \
+                sudo apt update -y && \
+                sudo apt install -y software-properties-common && \
+                sudo apt-add-repository universe && \
+                sudo apt update -y && \
+                sudo apt install -y python3 python3-venv python3-pip git && \
+                git clone ${{ env.GIT_REPO }} ${{ env.LOCAL_PATH }} && \
+                cd ${{ env.APP_PATH }} && \
+                python3 -m venv venv && \
+                source venv/bin/activate && \
+                pip install -r ${{ env.REQUIREMENTS_FILE }}
+              "; then
+                break
+              fi
+              echo "Retrying in 10 seconds..."
+              sleep 10
+            done
           fi
