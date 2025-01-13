@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'beginnerLevel/2_basicCICDPipelineWithGitHubActions/app/*'
-      - 'beginnerLevel/2_basicCICDPipelineWithGitHubActions/test/*'
+      - 'beginnerLevel/2_basicCICDPipelineWithGitHubActions/app/**'
+      - 'beginnerLevel/2_basicCICDPipelineWithGitHubActions/test/**'
       - 'beginnerLevel/2_basicCICDPipelineWithGitHubActions/requirements.txt'
 
 jobs:
@@ -15,16 +15,20 @@ jobs:
 
     env:
       REQUIREMENTS_FILE: beginnerLevel/2_basicCICDPipelineWithGitHubActions/requirements.txt
-      TEST_PATH: beginnerLevel/2_basicCICDPipelineWithGitHubActions/test
+      PYTHONPATH: beginnerLevel/2_basicCICDPipelineWithGitHubActions
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Test the codebase
+      - name: Install dependencies
         run: |
           pip install -r ${{ env.REQUIREMENTS_FILE }}
-          python -m unittest discover -s "${{ env.TEST_PATH }}" -p "test_main.py"
+
+      - name: Run tests
+        run: |
+          export PYTHONPATH="../../beginnerLevel/2_basicCICDPipelineWithGitHubActions"
+          python -m unittest test.test_main
 
   deploy:
     needs: test
@@ -39,7 +43,6 @@ jobs:
       LOCAL_PATH: /root/50DevOpsProjects
       APP_PATH: /root/50DevOpsProjects/beginnerLevel/2_basicCICDPipelineWithGitHubActions/app
 
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -52,4 +55,4 @@ jobs:
       - name: Create a new droplet and deploy the app
         run: |
           doctl compute droplet create ${{ env.DROPLET_NAME }} --image ${{ env.IMAGE }} --region ${{ env.REGION }} --size ${{ env.SIZE }} --ssh-keys ${{ secrets.DIGITALOCEAN_SSH_KEY_ID }} --wait
-          doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-command "git clone ${{  env.GIT_REPO }} ${{ env.LOCAL_PATH }} && cd ${{ env.APP_PATH }} && pip install -r requirements.txt"
+          doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-command "git clone ${{ env.GIT_REPO }} ${{ env.LOCAL_PATH }} && cd ${{ env.APP_PATH }} && pip install -r requirements.txt"
