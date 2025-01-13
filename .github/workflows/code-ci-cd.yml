@@ -15,6 +15,7 @@ jobs:
 
     env:
       REQUIREMENTS_FILE: beginner-level/2.Basic-CICD-Pipeline-with-GitHub-Actions/requirements.txt
+      TEST_PATH: beginner-level/2.Basic-CICD-Pipeline-with-GitHub-Actions/test
 
     steps:
       - name: Checkout repository
@@ -23,7 +24,7 @@ jobs:
       - name: Test the codebase
         run: |
           pip install -r ${{ env.REQUIREMENTS_FILE }}
-          python -m unittest test.test-main
+          python -m unittest ${{ env.TEST_PATH }}.test-main
 
   deploy:
     needs: test
