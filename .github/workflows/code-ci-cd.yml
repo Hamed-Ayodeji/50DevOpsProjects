@@ -48,4 +48,4 @@ jobs:
       - name: Create a new droplet and deploy the app
         run: |
           doctl compute droplet create ${{ env.DROPLET_NAME }} --image ${{ env.IMAGE }} --region ${{ env.REGION }} --size ${{ env.SIZE }} --ssh-keys ${{ secrets.DIGITALOCEAN_SSH_KEY_ID }} --wait
-          doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-command "git clone ${{  env.GIT_REPO }} ${{ env.LOCAL_PATH }} && cd ${{ env.APP_PATH }} && pip install -r requirements.txt && python app.main.py"
+          doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-command "git clone ${{  env.GIT_REPO }} ${{ env.LOCAL_PATH }} && cd ${{ env.APP_PATH }} && pip install -r requirements.txt"
