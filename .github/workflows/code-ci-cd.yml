@@ -84,9 +84,9 @@ jobs:
             sudo apt install -y python3 python3-pip git && \
             git clone ${{ env.GIT_REPO }} ${{ env.LOCAL_PATH }} && \
             cd ${{ env.APP_PATH }} && \
-            python3 -m venv venv && \
+            python -m venv venv && \
             source venv/bin/activate && \
-            pip3 install -r requirements.txt"
+            pip install -r requirements.txt"
           else
             echo "Creating new droplet and deploying application..."
             doctl compute droplet create ${{ env.DROPLET_NAME }} --image ${{ env.IMAGE }} --region ${{ env.REGION }} --size ${{ env.SIZE }} --ssh-keys ${{ secrets.DIGITALOCEAN_SSH_KEY_ID }} --wait
@@ -95,7 +95,7 @@ jobs:
             sudo apt install -y python3 python3-pip git && \
             git clone ${{ env.GIT_REPO }} ${{ env.LOCAL_PATH }} && \
             cd ${{ env.APP_PATH }} && \
-            python3 -m venv venv && \
+            python -m venv venv && \
             source venv/bin/activate && \
-            pip3 install -r requirements.txt"
+            pip install -r requirements.txt"
           fi
