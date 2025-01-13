@@ -56,7 +56,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.DIGITALOCEAN_PRIVATE_SSH_KEY }}" > ~/.ssh/id_ed25519
-          chmod 400 ~/.ssh/id_rsa
+          chmod 400 ~/.ssh/id_ed25519
 
       - name: Create a new droplet and deploy the app
         run: |
