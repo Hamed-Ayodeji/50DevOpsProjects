@@ -26,7 +26,7 @@ This simple Python app prompts the user for their name and generates a personali
      ```
 
 - When executed:
-  - Prompts the user for their name:  
+  - Prompts the user for their name:
        **`input("Enter your name: ")`**.
   - Calls the `greet` function with the input.
   - Displays the resulting greeting in the console.
