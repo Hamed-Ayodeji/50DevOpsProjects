@@ -5,17 +5,17 @@ on:
     branches:
       - main
     paths:
-      - 'beginner-level/2.Basic-CICD-Pipeline-with-GitHub-Actions/app/*'
-      - 'beginner-level/2.Basic-CICD-Pipeline-with-GitHub-Actions/test/*'
-      - 'beginner-level/2.Basic-CICD-Pipeline-with-GitHub-Actions/requirements.txt'
+      - 'beginnerLevel/2_basicCICDPipelineWithGitHubActions/app/*'
+      - 'beginnerLevel/2_basicCICDPipelineWithGitHubActions/test/*'
+      - 'beginnerLevel/2_basicCICDPipelineWithGitHubActions/requirements.txt'
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     env:
-      REQUIREMENTS_FILE: beginner-level/2.Basic-CICD-Pipeline-with-GitHub-Actions/requirements.txt
-      TEST_PATH: beginner-level/2.Basic-CICD-Pipeline-with-GitHub-Actions/test
+      REQUIREMENTS_FILE: beginnerLevel/2_basicCICDPipelineWithGitHubActions/requirements.txt
+      TEST_PATH: beginnerLevel/2_basicCICDPipelineWithGitHubActions/test
 
     steps:
       - name: Checkout repository
@@ -37,7 +37,7 @@ jobs:
       SIZE: s-1vcpu-1gb
       GIT_REPO: https://github.com/Hamed-Ayodeji/50DevOpsProjects.git
       LOCAL_PATH: /root/50DevOpsProjects
-      APP_PATH: /root/50DevOpsProjects/beginner-level/2.Basic-CICD-Pipeline-with-GitHub-Actions
+      APP_PATH: /root/50DevOpsProjects/beginnerLevel/2_basicCICDPipelineWithGitHubActions/app
 
 
     steps:
