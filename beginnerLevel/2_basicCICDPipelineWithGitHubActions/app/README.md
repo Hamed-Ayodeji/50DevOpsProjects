@@ -79,7 +79,7 @@ Hello, Bob!
 - Run the script using:
 
      ```bash
-     python app/main.py
+     python app/main.py 
      ```
 
 ---

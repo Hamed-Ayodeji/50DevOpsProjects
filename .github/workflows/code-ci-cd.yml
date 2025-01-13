@@ -83,6 +83,9 @@ jobs:
             doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path ~/.ssh/id_ed25519 --ssh-command "
               rm -rf ${{ env.LOCAL_PATH }} && \
               sudo apt update -y && \
+              sudo apt install -y software-properties-common && \
+              sudo apt-add-repository universe && \
+              sudo apt update -y && \
               sudo apt install -y python3 python3-venv python3-pip git && \
               git clone ${{ env.GIT_REPO }} ${{ env.LOCAL_PATH }} && \
               cd ${{ env.APP_PATH }} && \
@@ -94,6 +97,9 @@ jobs:
             echo "Creating new droplet and deploying application..."
             doctl compute droplet create ${{ env.DROPLET_NAME }} --image ${{ env.IMAGE }} --region ${{ env.REGION }} --size ${{ env.SIZE }} --ssh-keys ${{ secrets.DIGITALOCEAN_SSH_KEY_ID }} --wait
             doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path ~/.ssh/id_ed25519 --ssh-command "
+              sudo apt update -y && \
+              sudo apt install -y software-properties-common && \
+              sudo apt-add-repository universe && \
               sudo apt update -y && \
               sudo apt install -y python3 python3-venv python3-pip git && \
               git clone ${{ env.GIT_REPO }} ${{ env.LOCAL_PATH }} && \
