@@ -3,10 +3,10 @@ def greet(name: str) -> str:
   Returns a greeting message for the given name.
   """
   if not isinstance(name, str):
-    return "Hello, Stranger!"
+    return "Hi, Stranger!"
   if not name.strip():
-    return "Hello, Stranger!"
-  return f"Hello, {name.strip().capitalize()}!"
+    return "Hi, Stranger!"
+  return f"Hi, {name.strip().capitalize()}!"
 
 if __name__ == "__main__":
   try:
