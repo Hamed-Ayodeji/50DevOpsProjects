@@ -2,7 +2,7 @@
 
 ## **Overview**
 
-This simple Python app prompts the user for their name and generates a personalized greeting based on the input. It is designed to be user-friendly, interactive, and robust.
+This simple Python app prompts the user for their name and generates a personalized greeting based on the input. It is designed to be user-friendly, interactive, and robust. The app includes a function to generate the greeting and a script to interact with the user.
 
 ---
 

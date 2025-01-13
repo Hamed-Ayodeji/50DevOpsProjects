@@ -13,13 +13,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      REQUIREMENTS_FILE: beginner-level/2.Basic-CICD-Pipeline-with-GitHub-Actions/requirements.txt
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Test the codebase
         run: |
-          pip install -r requirements.txt
+          pip install -r ${{ env.REQUIREMENTS_FILE }}
           python -m unittest test.test-main
 
   deploy:
