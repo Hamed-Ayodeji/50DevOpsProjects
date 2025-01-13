@@ -42,6 +42,7 @@ jobs:
       GIT_REPO: https://github.com/Hamed-Ayodeji/50DevOpsProjects.git
       LOCAL_PATH: /root/50DevOpsProjects
       APP_PATH: /root/50DevOpsProjects/beginnerLevel/2_basicCICDPipelineWithGitHubActions/app
+      REQUIREMENTS_FILE: /root/50DevOpsProjects/beginnerLevel/2_basicCICDPipelineWithGitHubActions/requirements.txt
 
     steps:
       - name: Checkout repository
@@ -86,7 +87,7 @@ jobs:
               cd ${{ env.APP_PATH }} && \
               python3 -m venv venv && \
               source venv/bin/activate && \
-              pip install -r requirements.txt
+              pip install -r ${{ env.REQUIREMENTS_FILE }}
             "
           else
             echo "Creating new droplet and deploying application..."
@@ -98,6 +99,6 @@ jobs:
               cd ${{ env.APP_PATH }} && \
               python3 -m venv venv && \
               source venv/bin/activate && \
-              pip install -r requirements.txt
+              pip install -r ${{ env.REQUIREMENTS_FILE }}
             "
           fi
