@@ -21,13 +21,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Set up Python environment
         run: |
+          python3 -m venv venv
+          source venv/bin/activate
           pip install -r ${{ env.REQUIREMENTS_FILE }}
 
       - name: Run tests
         run: |
           export PYTHONPATH=$(pwd)/beginnerLevel/2_basicCICDPipelineWithGitHubActions
+          source venv/bin/activate
           python -m unittest discover -s beginnerLevel/2_basicCICDPipelineWithGitHubActions/test -p "test_*.py"
 
   deploy:
@@ -68,10 +71,8 @@ jobs:
         id: check-droplet
         run: |
           if doctl compute droplet list --format Name | grep -q "^${{ env.DROPLET_NAME }}$"; then
-            echo "Droplet exists."
             echo "exists=true" >> $GITHUB_ENV
           else
-            echo "Droplet does not exist."
             echo "exists=false" >> $GITHUB_ENV
           fi
 
