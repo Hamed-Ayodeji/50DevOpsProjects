@@ -102,11 +102,11 @@ This test suite validates the functionality of the `greet` function in the `app.
 
 ## **Running the Tests**
 
-1. Save the test script as `test-main.py` in the appropriate directory.
+1. Save the test script as `test_main.py` in the appropriate directory.
 2. Execute the tests using the following command:
 
    ```bash
-   python -m unittest test.test-main
+   python -m unittest test.test_main
    ```
 
 ---
