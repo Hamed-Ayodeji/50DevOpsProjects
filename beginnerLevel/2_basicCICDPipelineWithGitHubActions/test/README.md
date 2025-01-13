@@ -116,7 +116,7 @@ This test suite validates the functionality of the `greet` function in the `app.
 When all tests pass, the output should resemble the following:
 
 ```plaintext
-......
+.....
 ----------------------------------------------------------------------
 Ran 6 tests in 0.002s
 
