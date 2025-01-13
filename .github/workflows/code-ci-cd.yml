@@ -5,8 +5,9 @@ on:
     branches:
       - main
     paths:
-      - 'app/**'
-      - 'tests/**'
+      - '2.Basic-CICD-Pipeline-with-GitHub-Actions/app/*'
+      - '2.Basic-CICD-Pipeline-with-GitHub-Actions/test/*'
+      - '2.Basic-CICD-Pipeline-with-GitHub-Actions/requirements.txt'
 
 jobs:
   test:
