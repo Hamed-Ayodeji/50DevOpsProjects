@@ -1,5 +1,19 @@
 # **Documentation for the Basic CI/CD Pipeline with GitHub Actions (code-ci-cd.yml)**
 
+## **Table of Contents**
+
+1. [Overview](#overview)
+2. [Project Structure](#project-structure)
+3. [CI/CD Workflow](#ci/cd-workflow)
+4. [Usage](#usage)
+   - [Pre-Requisites](#1-pre-requisites)
+   - [Triggering the Workflow](#2-triggering-the-workflow)
+   - [Running Locally](#3-running-locally)
+   - [Accessing the Deployed Application](#4-accessing-the-deployed-application)
+   - [Workflow Example](#5-workflow-example)
+5. [Contributing](#contributing)
+6. [Conclusion](#conclusion)
+
 ## **Overview**
 
 This project demonstrates the implementation of a **Basic CI/CD Pipeline** using **GitHub Actions** to automate the testing and deployment of a simple Python application. The pipeline ensures reliable and efficient integration and deployment by:
