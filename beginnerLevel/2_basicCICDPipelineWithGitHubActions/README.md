@@ -4,7 +4,7 @@
 
 1. [Overview](#overview)
 2. [Project Structure](#project-structure)
-3. [CI/CD Workflow](#ci/cd-workflow)
+3. [CI/CD Workflow](#cicd-workflow)
 4. [Usage](#usage)
    - [Pre-Requisites](#1-pre-requisites)
    - [Triggering the Workflow](#2-triggering-the-workflow)
