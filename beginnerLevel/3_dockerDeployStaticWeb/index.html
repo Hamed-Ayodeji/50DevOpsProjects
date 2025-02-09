@@ -13,30 +13,43 @@
     <h1>Photo Gallery</h1>
   </header>
 
-  <main id="gallery">
-    <div class="image">
-      <img src="https://loremflickr.com/300/300?random=1" alt="Random nature image 1" loading="lazy">
-    </div>
-    <div class="image">
-      <img src="https://loremflickr.com/300/300?random=2" alt="Random nature image 2" loading="lazy">
-    </div>
-    <div class="image">
-      <img src="https://loremflickr.com/300/300?random=3" alt="Random nature image 3" loading="lazy">
-    </div>
-    <div class="image">
-      <img src="https://loremflickr.com/300/300?random=4" alt="Random nature image 4" loading="lazy">
-    </div>
-    <div class="image">
-      <img src="https://loremflickr.com/300/300?random=5" alt="Random nature image 5" loading="lazy">
-    </div>
-    <div class="image">
-      <img src="https://loremflickr.com/300/300?random=6" alt="Random nature image 6" loading="lazy">
-    </div>
-  </main>
+  <section id="gallery" aria-label="Photo Gallery">
+    <noscript>Your browser does not support JavaScript or it is disabled. Please enable JavaScript to view the
+      gallery.</noscript>
+    <div class="image"><img alt="Random Image 1" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 2" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 3" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 4" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 5" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 6" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 7" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 8" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 9" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 10" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 11" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 12" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 13" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 14" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 15" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 16" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 17" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 18" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 19" loading="lazy"></div>
+    <div class="image"><img alt="Random Image 20" loading="lazy"></div>
+  </section>
 
   <footer id="footer">
-    <p>&copy; 2025 Photo Gallery | Designed by <b>Qurtana</b></p>
+    <p>&copy; 2025 Photo Gallery | Designed by <strong>Qurtana</strong></p>
   </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const images = document.querySelectorAll("#gallery .image img");
+      images.forEach((img, index) => {
+        img.src = `https://picsum.photos/300/300?random=${Date.now() + index}`;
+      });
+    });
+  </script>
 </body>
 
 </html>
