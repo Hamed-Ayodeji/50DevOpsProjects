@@ -19,6 +19,7 @@ This project was designed to be lightweight, user-friendly, and visually appeali
 ### ✅ **Responsive & Interactive Navigation**
 
 - A **fixed navigation bar** that remains visible as you scroll.
+    ![Desktop View](../.img/01-index.png)
 - **Active section highlighting** in the navbar based on the current scroll position.
 - A **hamburger menu** for mobile users that expands and collapses smoothly.
 
@@ -27,6 +28,7 @@ This project was designed to be lightweight, user-friendly, and visually appeali
 - **Smooth scrolling behavior** for enhanced user experience.
 - A **scroll down icon** in the hero section to guide users to the gallery.
 - A **scroll-to-top button** that appears when the user scrolls down.
+    ![Scroll Buttons](../.img/04-scroll-top.png)
 
 ### ✅ **Gallery with Image Hover Effects**
 
@@ -36,12 +38,15 @@ This project was designed to be lightweight, user-friendly, and visually appeali
 ### ✅ **Modal for Image Viewing & Downloading**
 
 - Clicking an image opens it in a **modal (pop-up)** for a **full-screen view**.
+    ![Modal View](../.img/05-modal-view.png)
 - Users can **download** any image directly from the modal.
 
 ### ✅ **Mobile-Friendly & Fully Responsive**
 
 - Works **flawlessly on all screen sizes** (Desktop, Tablet, Mobile).
+    ![Mobile View](../.img/03-mobile-view.png)
 - A **mobile-friendly menu** that appears on smaller screens.
+    ![Mobile Menu](../.img/02-hamburger-menu.png)
 
 ### ✅ **Performance Optimizations**
 
@@ -68,13 +73,10 @@ This project was designed to be lightweight, user-friendly, and visually appeali
 The project follows a simple and well-organized file structure:
 
 ```plaintext
-📂 QurtRandGal/
+📂 app/
 │── 📄 index.html        # Main HTML file
 │── 📄 style.css         # Stylesheet for design and responsiveness
 │── 📄 script.js         # JavaScript for interactivity
-│── 📂 assets/           # Folder for additional assets (if needed)
-│── 📂 fonts/            # Custom fonts (if added)
-│── 📂 images/           # Static images (optional)
 ```
 
 ---
